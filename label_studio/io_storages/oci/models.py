@@ -138,28 +138,34 @@ class OracleCloudImportStorage(OracleCloudStorageMixin, ImportStorage):
     def scan_and_create_links(self):
         return self._scan_and_create_links(OracleCloudImportStorageLink)
     
+    def resolve_uri(self, data):
+        return data
+    
 class OracleCloudExportStorage(OracleCloudStorageMixin, ExportStorage):
     def save_annotation(self, annotation):
         logger.debug(f'Creating new object on {self.__class__.__name__} Storage {self} for annotation {annotation}')
         ser_annotation = self._get_serialized_data(annotation)
         namespace = self.get_namespace()
+        object_storage = self.get_object_storage()
         with transaction.atomic():
             # Create export storage link
             try:
                 link = OracleCloudExportStorageLink.create(annotation, self)
-                key = str(self.prefix) + '/' + link.key if self.prefix else link.key
-                self.object_stroage.put_object(namespace,self.bucket,key,json.dumps(ser_annotation).encode())
+                key = str(self.bucket_prefix) + '/' + link.key if self.bucket_prefix else link.key
+                endpoint = f"{self.pre_authenticated_url}{key}.json"
+                response = requests.put(endpoint, data=json.dumps(ser_annotation))
+                if response.status_code != 200:
+                    raise RuntimeError(f"Endpoint returned reponse code {response.status_code} instead of [200]")
             except Exception as exc:
                 logger.error(f"Can't export annotation {annotation} to OCI storage {self}. Reason: {exc}", exc_info=True)
 
 @receiver(post_save, sender=Annotation)
 def export_annotation_to_oci_storages(sender, instance, **kwargs):
     project = instance.task.project
-    if hasattr(project, 'io_storages_ociexportstorages'):
-        for storage in project.io_storages_ociexportstorages.all():
+    if hasattr(project, 'io_storages_oraclecloudexportstorages'):
+        for storage in project.io_storages_oraclecloudexportstorages.all():
             logger.debug(f'Export {instance} to OCI storage {storage}')
             storage.save_annotation(instance)
-
 
 class OracleCloudImportStorageLink(ImportStorageLink):
     storage = models.ForeignKey(OracleCloudImportStorage, on_delete=models.CASCADE, related_name='links')
