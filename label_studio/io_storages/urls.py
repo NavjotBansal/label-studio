@@ -7,6 +7,7 @@ from .azure_blob.api import *
 from .gcs.api import *
 from .redis.api import *
 from .localfiles.api import *
+from .oci.api import *
 from .all_api import *
 
 app_name = 'storages'
@@ -41,6 +42,17 @@ _api_urlpatterns = [
     path('export/azure/<int:pk>', AzureBlobExportStorageDetailAPI.as_view(), name='export-storage-azure-detail'),
     path('export/azure/validate', AzureBlobExportStorageValidateAPI.as_view(), name='export-storage-azure-validate'),
     path('export/azure/form', AzureBlobExportStorageFormLayoutAPI.as_view(), name='export-storage-azure-form'),
+
+    # Oracle Cloud
+    path('oci', OracleCloudImportStorageListAPI.as_view(), name='storage-oci-list'),
+    path('oci/<int:pk>', OracleCloudImportStorageDetailAPI.as_view(), name='storage-oci-detail'),
+    path('oci/<int:pk>/sync', OracleCloudImportStorageSyncAPI.as_view(), name='storage-oci-sync'),
+    path('oci/validate', OracleCloudImportStorageValidateAPI.as_view(), name='storage-oci-validate'),
+    path('oci/form', OracleCloudImportStorageFormLayoutAPI.as_view(), name='storage-oci-form'),
+    path('export/oci', OracleCloudExportStorageListAPI.as_view(), name='export-storage-oci-list'),
+    path('export/oci/<int:pk>', OracleCloudExportStorageDetailAPI.as_view(), name='export-storage-oci-detail'),
+    path('export/oci/validate', OracleCloudExportStorageValidateAPI.as_view(), name='export-storage-oci-validate'),
+    path('export/oci/form', OracleCloudExportStorageFormLayoutAPI.as_view(), name='export-storage-oci-form'),
 
     # Google Cloud Storage
     path('gcs', GCSImportStorageListAPI.as_view(), name='storage-gcs-list'),

@@ -1,0 +1,75 @@
+# 1x3 grid
+title_container_prefix: &title_container_prefix
+  - type: text
+    name: title
+    label: Storage Title
+  - type: text
+    name: tenancy
+    label: Tenancy
+    required: true
+  - type: text
+    name: bucket_name
+    label: Bucket Name
+    required: true
+  - type: text
+    name: region
+    label: Region Name
+    required: true
+  - type: text
+    name: bucket_prefix
+    label: Bucket Prefix
+
+# 1x4 grid
+azure_params: &oci_params
+  - type: text
+    name: ocid
+    label: OCID
+    required: true
+  - type: text
+    name: finger_print
+    label: Fingerprint
+    required: true
+  - type: text
+    name: private_key
+    label: Private Key
+    required: true
+  - type: password
+    name: pass_phrase
+    label: Passphrase
+  - type: text
+    name: pre_authenticated_url
+    label: Preauth url
+    required: true
+
+ImportStorage:
+  # Title, Tenancy, Bucket Name, Bucket Prefix
+  - columnCount: 3
+    fields: *title_container_prefix
+  # Regex filter
+  - columnCount: 1
+    fields:
+      - type: text
+        name: regex_filter
+        label: File Filter Regex
+        placeholder: '.*csv or .*(jpe?g|png|tiff) or .\w+-\d+.text'
+        validators:
+          - regexp
+  # OCI specific params
+  - columnCount: 4
+    fields: *oci_params
+
+  # 1 columns grid
+  - columnCount: 1
+    columns:
+      - width: 371
+        fields:
+          - type: toggle
+            name: use_blob_urls
+            label: Treat every bucket object as a source file
+            description: If unchecked, treat every bucket object as a JSON-formatted task. Optional
+
+ExportStorage:
+  - columnCount: 4
+    fields: *title_container_prefix
+  - columnCount: 4
+    fields: *oci_params

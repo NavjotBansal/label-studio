@@ -4,3 +4,4 @@ from .azure_blob.models import AzureBlobImportStorage, AzureBlobImportStorageLin
 from .s3.models import S3ImportStorage, S3ImportStorageLink, S3ExportStorage, S3ExportStorageLink
 from .gcs.models import GCSImportStorage, GCSImportStorageLink, GCSExportStorage, GCSExportStorageLink
 from .redis.models import RedisImportStorage, RedisImportStorageLink, RedisExportStorage, RedisExportStorageLink
+from .oci.models import OracleCloudImportStorage,OracleCloudImportStorageLink,OracleCloudExportStorage,OracleCloudExportStorageLink
